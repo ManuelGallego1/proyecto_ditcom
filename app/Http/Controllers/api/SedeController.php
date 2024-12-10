@@ -10,24 +10,37 @@ use Illuminate\Support\Facades\Validator;
 
 class SedeController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        // Filtrar solo las sedes activas e incluir el campo 'activo'
+        // Número de registros por página (se puede personalizar con un parámetro 'per_page')
+        $perPage = $request->input('per_page', 10);
+
+        // Filtrar solo las sedes activas e incluir el campo 'activo', aplicar paginación
         $sedes = Sede::with('coordinador')
             ->where('activo', true)
-            ->get()
-            ->map(function ($sede) {
-                return [
-                    'id' => $sede->id,
-                    'nombre' => $sede->nombre,
-                    'coordinador_id' => $sede->coordinador_id,
-                    'coordinador_name' => User::find($sede->coordinador_id)->name,
-                    'activo' => $sede->activo,
-                ];
-            });
+            ->orderBy('id', 'asc') // Puedes cambiar el orden si lo deseas
+            ->paginate($perPage); // Paginación
 
+        // Formatear los datos de respuesta
+        $sedes = $sedes->map(function ($sede) {
+            return [
+                'id' => $sede->id,
+                'nombre' => $sede->nombre,
+                'coordinador_id' => $sede->coordinador_id,
+                'coordinador_name' => User::find($sede->coordinador_id)->name,
+                'activo' => $sede->activo,
+            ];
+        });
+
+        // Respuesta con datos y paginación
         $data = [
             'sedes' => $sedes,
+            'pagination' => [
+                'current_page' => $sedes->currentPage(),
+                'last_page' => $sedes->lastPage(),
+                'per_page' => $sedes->perPage(),
+                'total' => $sedes->total(),
+            ],
             'status' => 200,
         ];
 

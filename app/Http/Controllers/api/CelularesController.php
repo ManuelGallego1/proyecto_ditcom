@@ -9,13 +9,21 @@ use Illuminate\Support\Facades\Validator;
 
 class CelularesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        // Obtener el número de elementos por página, por defecto 10
+        $perPage = $request->input('per_page', 10);
         // Filtrar solo los celulares donde 'activo' sea true
-        $celulares = Celulares::where('activo', true)->get();
+        $celulares = Celulares::where('activo', true)->paginate($perPage);
 
         $data = [
             'celulares' => $celulares,
+            'pagination' => [
+                'current_page' => $celulares->currentPage(),
+                'last_page' => $celulares->lastPage(),
+                'total' => $celulares->total(),
+                'per_page' => $celulares->perPage(),
+            ],
             'status' => 200,
         ];
 

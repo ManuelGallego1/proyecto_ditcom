@@ -10,22 +10,32 @@ use Illuminate\Support\Facades\Validator;
 class SedeVendedorController extends Controller
 {
     // Método para listar todas las asignaciones de vendedores a sedes
-    public function index()
+    public function index(Request $request)
     {
-        // Obtener todas las asignaciones con las relaciones de vendedor y sede
-        $sedeVendedores = SedeVendedor::with(['vendedor', 'sede'])->get();
+        // Número de elementos por página, por defecto 10
+        $perPage = $request->input('per_page', 10);
+
+        // Obtener las asignaciones con relaciones y paginarlas
+        $sedeVendedores = SedeVendedor::with(['vendedor', 'sede'])->paginate($perPage);
 
         // Formatear la respuesta para incluir los nombres
-        $formattedSedeVendedores = $sedeVendedores->map(function ($sedeVendedor) {
+        $formattedSedeVendedores = $sedeVendedores->items(); // Obtiene los registros actuales
+        $formattedSedeVendedores = array_map(function ($sedeVendedor) {
             return [
-                'id' => $sedeVendedor->id,
-                'vendedor_name' => $sedeVendedor->vendedor ? $sedeVendedor->vendedor->name : 'Vendedor no asignado', // Verificar si el vendedor existe
-                'sede_name' => $sedeVendedor->sede ? $sedeVendedor->sede->nombre : 'Sede no asignada', // Verificar si la sede existe
+                'id' => $sedeVendedor['id'],
+                'vendedor_name' => $sedeVendedor['vendedor']['name'] ?? 'Vendedor no asignado',
+                'sede_name' => $sedeVendedor['sede']['nombre'] ?? 'Sede no asignada',
             ];
-        });
+        }, $formattedSedeVendedores);
 
         return response()->json([
             'sedeVendedores' => $formattedSedeVendedores,
+            'pagination' => [
+                'current_page' => $sedeVendedores->currentPage(),
+                'last_page' => $sedeVendedores->lastPage(),
+                'total' => $sedeVendedores->total(),
+                'per_page' => $sedeVendedores->perPage(),
+            ],
             'status' => 200,
         ], 200);
     }

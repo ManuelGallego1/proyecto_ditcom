@@ -9,10 +9,12 @@ use Illuminate\Support\Facades\Validator;
 
 class PlanesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
+        $perPage = $request->input('per_page', 10);
         // Filtrar solo los planes activos
-        $planes = Planes::where('activo', true)->get();
+        $planes = Planes::where('activo', true)->orderBy('id', 'asc') // Ordenar por id ascendente
+            ->paginate($perPage); // Paginación
 
         $data = [
             'planes' => $planes,
