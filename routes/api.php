@@ -10,6 +10,8 @@ use App\Http\Controllers\Api\SedeVendedorController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
+use App\Http\Controllers\Api\FijoController;
+use App\Http\Controllers\Api\MovilController;
 
 Route::post('/v1/login', [App\Http\Controllers\api\AuthController::class, 'login'])->name('api.login');
 Route::post('/v1/register', [App\Http\Controllers\api\AuthController::class, 'register'])->name('api.register');
@@ -20,6 +22,8 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('clientes', ClientesController::class);
     Route::apiResource('planes', PlanesController::class);
     Route::apiResource('sede', SedeController::class);
+    Route::apiResource('fijo', FijoController::class);
+    Route::apiResource('movil', MovilController::class);
 
     Route::get('/user', function (Request $request) {
         return $request->user();
