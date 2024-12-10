@@ -13,4 +13,5 @@ Route::post('/v1/register', [App\Http\Controllers\api\AuthController::class, 're
 
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/v1/logout', [App\Http\Controllers\api\AuthController::class, 'logout'])->name('api.logout');
+    Route::post('/v1/mercadopago/preference', [App\Http\Controllers\MercadoPagoController::class, 'createPreference'])->name('api.mercadopago.preference');
 });

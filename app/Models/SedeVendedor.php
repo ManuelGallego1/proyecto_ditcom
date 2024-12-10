@@ -8,7 +8,7 @@ class SedeVendedor extends Model
 {
     public $timestamps = false;
 
-    protected $table = 'sedevendedor';
+    protected $table = 'sede_vendedor';
 
     protected $fillable = [
         'vendedor_id',

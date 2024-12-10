@@ -12,7 +12,7 @@ class UserController extends Controller
 {
     public function index()
     {
-        $users = User::where('role', '!=', 'admin')->get();
+        $users = User::where('role', '!=', 'super')->get();
 
         $data = [
             'users' => $users,
@@ -26,9 +26,9 @@ class UserController extends Controller
     {
         $validar = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users', // Cambié email por username
+            'username' => 'required|string|max:255|unique:users',
             'password' => 'required|string|min:8',
-            'role' => 'required|string|in:admin,vendedor,coordinador,activador,pyme,administrador', // Ajusta los roles según tu aplicación
+            'role' => 'required|string|in:admin,asesor,coordinador,super',
         ]);
 
         if ($validar->fails()) {
@@ -43,7 +43,7 @@ class UserController extends Controller
 
         $user = User::create([
             'name' => $request->name,
-            'username' => $request->username, // Guardar username en lugar de email
+            'username' => $request->username, 
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'activo' => true,
@@ -125,9 +125,9 @@ class UserController extends Controller
 
         $validar = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'username' => 'required|string|max:255|unique:users,username,'.$id, // Verificación de username único
+            'username' => 'required|string|max:255|unique:users,username,'.$id,
             'password' => 'nullable|string|min:8',
-            'role' => 'required|string|in:admin,vendedor,coordinador,activador,pyme,administrador', // Ajusta los roles según tu aplicación
+            'role' => 'required|string|in:admin,asesor,coordinador,super',
             'activo' => 'required|boolean',
         ]);
 
@@ -175,9 +175,9 @@ class UserController extends Controller
 
         $validar = Validator::make($request->all(), [
             'name' => 'nullable|string|max:255',
-            'username' => 'nullable|string|max:255|unique:users,username,'.$id, // Verificación de username único
+            'username' => 'nullable|string|max:255|unique:users,username,'.$id,
             'password' => 'nullable|string|min:8',
-            'role' => 'nullable|string|in:admin,vendedor,coordinador,activador,pyme,administrador', // Ajusta los roles según tu aplicación
+            'role' => 'required|string|in:admin,asesor,coordinador,super',
             'activo' => 'nullable|boolean',
         ]);
 
