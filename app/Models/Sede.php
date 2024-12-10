@@ -11,7 +11,7 @@ class Sede extends Model
 
     public $timestamps = false;
 
-    protected $table = 'sede';
+    protected $table = 'sedes';
 
     protected $fillable = [
         'nombre',

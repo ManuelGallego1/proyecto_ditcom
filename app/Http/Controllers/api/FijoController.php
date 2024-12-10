@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use App\Models\Fijo;
 use App\Models\SedeVendedor;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
 class FijoController extends Controller
@@ -54,7 +54,7 @@ class FijoController extends Controller
             return response()->json([
                 'message' => 'Error en la validación de datos',
                 'errors' => $validar->errors(),
-                'status' => 400
+                'status' => 400,
             ], 400);
         }
 
@@ -64,10 +64,10 @@ class FijoController extends Controller
 
         $sedeVendedor = SedeVendedor::where('vendedor_id', $request->vendedor_id)->first();
 
-        if (!$sedeVendedor) {
+        if (! $sedeVendedor) {
             return response()->json([
                 'message' => 'Error, no se encontró una sede asignada para el vendedor',
-                'status' => 400
+                'status' => 400,
             ], 400);
         }
 
@@ -91,29 +91,28 @@ class FijoController extends Controller
         ]);
 
         // Comprobar si la creación fue exitosa
-        if (!$fijo) {
+        if (! $fijo) {
             return response()->json([
                 'message' => 'Error al crear el registro de fijo',
-                'status' => 500
+                'status' => 500,
             ], 500);
         }
 
         // Respuesta exitosa
         return response()->json([
             'fijo' => $fijo,
-            'status' => 201
+            'status' => 201,
         ], 201);
     }
-
 
     public function show($id)
     {
         $fijo = Fijo::where('vendedor_id', $id)->get();
 
-        if (!$fijo) {
+        if (! $fijo) {
             $data = [
                 'message' => 'Error, fijo no encontrado',
-                'status' => 404
+                'status' => 404,
             ];
 
             return response()->json($data, 404);
@@ -121,7 +120,7 @@ class FijoController extends Controller
 
         $data = [
             'fijo' => $fijo,
-            'status' => 200
+            'status' => 200,
         ];
 
         return response()->json($data, 200);
@@ -132,10 +131,10 @@ class FijoController extends Controller
     {
         $fijo = Fijo::where('id', $id)->get();
 
-        if (!$fijo) {
+        if (! $fijo) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
-                'status' => 404
+                'status' => 404,
             ];
 
             return response()->json($data, 404);
@@ -143,7 +142,7 @@ class FijoController extends Controller
 
         $data = [
             'fijo' => $fijo,
-            'status' => 200
+            'status' => 200,
         ];
 
         return response()->json($data, 200);
@@ -164,32 +163,30 @@ class FijoController extends Controller
         return response()->json(['fijo' => $fijos, 'status' => 200], 200);
     }
 
-
     public function showbypyme()
     {
         $fijo = Fijo::where('tipo_producto', 'pyme')->get();
         if ($fijo->isEmpty()) {
             return response()->json([
                 'message' => 'No se encontraron registros de fijo tipo pyme',
-                'status' => 404
+                'status' => 404,
             ], 404);
         }
+
         return response()->json([
             'fijo' => $fijo,
-            'status' => 200
+            'status' => 200,
         ], 200);
     }
-
-
 
     public function destroy($id)
     {
         $fijo = Fijo::find($id);
 
-        if (!$fijo) {
+        if (! $fijo) {
             $data = [
                 'message' => 'Error, fijo no encontrado',
-                'status' => 404
+                'status' => 404,
             ];
 
             return response()->json($data, 404);
@@ -199,7 +196,7 @@ class FijoController extends Controller
 
         $data = [
             'message' => 'Registro de fijo eliminado',
-            'status' => 200
+            'status' => 200,
         ];
 
         return response()->json($data, 200);
@@ -209,10 +206,10 @@ class FijoController extends Controller
     {
         $fijo = Fijo::find($id);
 
-        if (!$fijo) {
+        if (! $fijo) {
             $data = [
                 'message' => 'Error, fijo no encontrado',
-                'status' => 404
+                'status' => 404,
             ];
 
             return response()->json($data, 404);
@@ -239,7 +236,7 @@ class FijoController extends Controller
             $data = [
                 'message' => 'Error en la validación de datos',
                 'errors' => $validar->errors(),
-                'status' => 400
+                'status' => 400,
             ];
 
             return response()->json($data, 400);
@@ -250,7 +247,7 @@ class FijoController extends Controller
         $data = [
             'message' => 'Registro de fijo actualizado',
             'fijo' => $fijo,
-            'status' => 200
+            'status' => 200,
         ];
 
         return response()->json($data, 200);
@@ -260,10 +257,10 @@ class FijoController extends Controller
     {
         $fijo = Fijo::find($id);
 
-        if (!$fijo) {
+        if (! $fijo) {
             return response()->json([
                 'message' => 'Error, fijo no encontrado',
-                'status' => 404
+                'status' => 404,
             ], 404);
         }
 
@@ -291,7 +288,7 @@ class FijoController extends Controller
             return response()->json([
                 'message' => 'Error en la validación de datos',
                 'errors' => $validar->errors(),
-                'status' => 400
+                'status' => 400,
             ], 400);
         }
 
@@ -301,7 +298,7 @@ class FijoController extends Controller
         return response()->json([
             'message' => 'Registro de fijo actualizado parcialmente',
             'fijo' => $fijo,
-            'status' => 200
+            'status' => 200,
         ], 200);
     }
 
@@ -317,5 +314,4 @@ class FijoController extends Controller
 
         return response()->json(['fijo' => $fijos, 'status' => 200], 200);
     }
-
 }
