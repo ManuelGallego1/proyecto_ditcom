@@ -25,4 +25,5 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::apiResource('planes', PlanesController::class);
     Route::apiResource('sede', SedeController::class);
 
+    Route::post('/v1/mercadopago/preference', [App\Http\Controllers\MercadoPagoController::class, 'createPreference'])->name('api.mercadopago.preference');
 });
