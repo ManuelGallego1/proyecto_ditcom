@@ -4,14 +4,14 @@ namespace App\Exports;
 
 use App\Models\Fijo;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithStyles;
-use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-class FijoExport implements FromCollection, WithHeadings, WithColumnFormatting, WithColumnWidths, WithStyles
+class FijoExport implements FromCollection, WithColumnFormatting, WithColumnWidths, WithHeadings, WithStyles
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -22,11 +22,12 @@ class FijoExport implements FromCollection, WithHeadings, WithColumnFormatting, 
             ->get()
             ->map(function ($fijo) {
                 $cliente_nombre = trim(
-                    $fijo->cliente ? $fijo->cliente->p_nombre .
-                    ($fijo->cliente->s_nombre ? ' ' . $fijo->cliente->s_nombre : '') . ' ' .
-                    $fijo->cliente->p_apellido .
-                    ($fijo->cliente->s_apellido ? ' ' . $fijo->cliente->s_apellido : '') : 'N/A'
+                    $fijo->cliente ? $fijo->cliente->p_nombre.
+                    ($fijo->cliente->s_nombre ? ' '.$fijo->cliente->s_nombre : '').' '.
+                    $fijo->cliente->p_apellido.
+                    ($fijo->cliente->s_apellido ? ' '.$fijo->cliente->s_apellido : '') : 'N/A'
                 );
+
                 return [
                     'fecha_digitacion' => \PhpOffice\PhpSpreadsheet\Shared\Date::dateTimeToExcel(\Carbon\Carbon::createFromFormat('Y-m-d', $fijo->created_at->format('Y-m-d'))),
                     'fecha_instalacion' => \PhpOffice\PhpSpreadsheet\Shared\Date::dateTimeToExcel(\Carbon\Carbon::createFromFormat('Y-m-d', $fijo->fecha_instalacion)),
@@ -85,8 +86,6 @@ class FijoExport implements FromCollection, WithHeadings, WithColumnFormatting, 
 
     /**
      * Define los anchos de las columnas.
-     *
-     * @return array
      */
     public function columnWidths(): array
     {
@@ -113,7 +112,6 @@ class FijoExport implements FromCollection, WithHeadings, WithColumnFormatting, 
     /**
      * Estilos de las celdas.
      *
-     * @param Worksheet $sheet
      * @return array
      */
     public function styles(Worksheet $sheet)
@@ -123,4 +121,3 @@ class FijoExport implements FromCollection, WithHeadings, WithColumnFormatting, 
         ];
     }
 }
-

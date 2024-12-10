@@ -4,14 +4,13 @@ namespace App\Exports;
 
 use App\Models\Movil;
 use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
 use Maatwebsite\Excel\Concerns\WithColumnWidths;
+use Maatwebsite\Excel\Concerns\WithHeadings;
 use PhpOffice\PhpSpreadsheet\Style\NumberFormat;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
 
-
-class MovilExport implements FromCollection, WithHeadings, WithColumnFormatting, WithColumnWidths
+class MovilExport implements FromCollection, WithColumnFormatting, WithColumnWidths, WithHeadings
 {
     /**
      * @return \Illuminate\Support\Collection
@@ -23,20 +22,20 @@ class MovilExport implements FromCollection, WithHeadings, WithColumnFormatting,
             ->get()
             ->map(function ($movil) {
                 $cliente_nombre = trim(
-                    $movil->cliente ? $movil->cliente->p_nombre .
-                    ($movil->cliente->s_nombre ? ' ' . $movil->cliente->s_nombre : '') . ' ' .
-                    $movil->cliente->p_apellido .
-                    ($movil->cliente->s_apellido ? ' ' . $movil->cliente->s_apellido : '') : 'N/A'
+                    $movil->cliente ? $movil->cliente->p_nombre.
+                    ($movil->cliente->s_nombre ? ' '.$movil->cliente->s_nombre : '').' '.
+                    $movil->cliente->p_apellido.
+                    ($movil->cliente->s_apellido ? ' '.$movil->cliente->s_apellido : '') : 'N/A'
                 );
                 $celular_marca = $movil->celular ? $movil->celular->marca : 'N/A';
                 $celular_modelo = $movil->celular ? $movil->celular->modelo : 'N/A';
-                $plan_codigo_nombre = $movil->plan ? $movil->plan->codigo . ' - ' . $movil->plan->nombre : 'N/A';
+                $plan_codigo_nombre = $movil->plan ? $movil->plan->codigo.' - '.$movil->plan->nombre : 'N/A';
 
                 return [
                     'fecha' => \PhpOffice\PhpSpreadsheet\Shared\Date::dateTimeToExcel(\Carbon\Carbon::createFromFormat('Y-m-d', $movil->created_at->format('Y-m-d'))),
                     'min' => $movil->min,
                     'imei' => $movil->imei,
-                    'iccid' => $movil->iccid . " ",
+                    'iccid' => $movil->iccid.' ',
                     'tipo' => $movil->tipo,
                     'plan' => $plan_codigo_nombre,
                     'celular_marca' => $celular_marca,
@@ -59,16 +58,13 @@ class MovilExport implements FromCollection, WithHeadings, WithColumnFormatting,
                 $row['min'] = (string) $row['min'];
                 $row['imei'] = (string) $row['imei'];
                 $row['iccid'] = (string) $row['iccid'];
+
                 return $row;
             });
     }
 
-
-
     /**
      * Define los encabezados del archivo Excel.
-     *
-     * @return array
      */
     public function headings(): array
     {
@@ -93,14 +89,12 @@ class MovilExport implements FromCollection, WithHeadings, WithColumnFormatting,
             'Financiera',
             'Coordinador',
             'Valor Recarga',
-            'Tipo de producto'
+            'Tipo de producto',
         ];
     }
 
     /**
      * Formato de las columnas.
-     *
-     * @return array
      */
     public function columnFormats(): array
     {
@@ -111,17 +105,12 @@ class MovilExport implements FromCollection, WithHeadings, WithColumnFormatting,
             'D' => NumberFormat::FORMAT_TEXT, // Asegúrate de que la columna D (ICCID) esté configurada como texto
             'E' => NumberFormat::FORMAT_TEXT,
             'O' => '#,##0.00',
-            'T' => '#,##0.00'
+            'T' => '#,##0.00',
         ];
     }
 
-
-
-
     /**
      * Anchos de las columnas.
-     *
-     * @return array
      */
     public function columnWidths(): array
     {

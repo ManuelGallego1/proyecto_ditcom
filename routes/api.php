@@ -1,12 +1,12 @@
 <?php
 
+use App\Exports\FijoExport;
+use App\Exports\MovilExport;
 use App\Http\Controllers\Api\CelularesController;
 use App\Http\Controllers\Api\ClientesController;
 use App\Http\Controllers\Api\PlanesController;
 use App\Http\Controllers\Api\SedeController;
 use App\Http\Controllers\Api\SedeVendedorController;
-use App\Exports\FijoExport;
-use App\Exports\MovilExport;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
@@ -14,10 +14,8 @@ use Maatwebsite\Excel\Facades\Excel;
 Route::post('/v1/login', [App\Http\Controllers\api\AuthController::class, 'login'])->name('api.login');
 Route::post('/v1/register', [App\Http\Controllers\api\AuthController::class, 'register'])->name('api.register');
 
-
 Route::middleware(['auth:sanctum'])->group(function () {
     Route::post('/v1/logout', [App\Http\Controllers\api\AuthController::class, 'logout'])->name('api.logout');
-    Route::apiResource('sede-vendedores', SedeVendedorController::class);
     Route::apiResource('celulares', CelularesController::class);
     Route::apiResource('clientes', ClientesController::class);
     Route::apiResource('planes', PlanesController::class);
@@ -33,6 +31,7 @@ Route::middleware(['auth:sanctum', 'role:asesor'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'role:super'])->group(function () {
+    Route::apiResource('sede-vendedores', SedeVendedorController::class);
     Route::get('/export-movil', function () {
         return Excel::download(new MovilExport, 'movil.xlsx');
     });
