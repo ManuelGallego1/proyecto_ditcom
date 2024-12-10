@@ -9,12 +9,20 @@ use Illuminate\Support\Facades\Validator;
 
 class ClientesController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $clientes = Clientes::all();
+        $perPage = $request->input('per_page', 10);
+
+        $clientes = Clientes::orderBy('id', 'asc')->paginate($perPage);
 
         $data = [
             'clientes' => $clientes,
+            'pagination' => [
+                'current_page' => $clientes->currentPage(), // Página actual
+                'last_page' => $clientes->lastPage(), // Última página
+                'per_page' => $clientes->perPage(), // Cantidad de registros por página
+                'total' => $clientes->total(), // Total de registros
+            ],
             'status' => 200,
         ];
 
