@@ -16,12 +16,13 @@ class CelularesFactory extends Factory
      * @return array<string, mixed>
      */
     protected $model = Celulares::class;
+
     public function definition(): array
     {
         return [
-            'marca' => $this->faker->company,      
-            'modelo' => $this->faker->word,          
-            'activo' => $this->faker->boolean, 
+            'marca' => $this->faker->company,
+            'modelo' => $this->faker->word,
+            'activo' => $this->faker->boolean,
         ];
     }
 }

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Factories\Factory;
 class ClientesFactory extends Factory
 {
     protected $model = Clientes::class;
+
     public function definition(): array
     {
         return [

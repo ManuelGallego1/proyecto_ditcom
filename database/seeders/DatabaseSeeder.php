@@ -17,6 +17,9 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             CelularesSeeder::class,
             ClienteSeeder::class,
+            SedeSeeder::class,
+            SedeVendedorSeeder::class,
+            FijoSeeder::class,
         ]);
     }
 }
