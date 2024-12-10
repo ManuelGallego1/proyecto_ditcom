@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PlanCollection;
 use App\Http\Resources\PlanResource;
 use App\Models\Planes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\PlanCollection;
 
 class PlanesController extends Controller
 {
@@ -53,7 +53,7 @@ class PlanesController extends Controller
             'stock' => true,
         ]);
 
-        if (!$plan) {
+        if (! $plan) {
             $data = [
                 'message' => 'Error al crear el registro del plan',
                 'status' => 500,
@@ -75,7 +75,7 @@ class PlanesController extends Controller
         // Buscar solo los planes stocks por ID
         $plan = Planes::where('stock', true)->find($id);
 
-        if (!$plan) {
+        if (! $plan) {
             $data = [
                 'message' => 'Error, plan no encontrado o sin stock',
                 'status' => 404,
@@ -96,7 +96,7 @@ class PlanesController extends Controller
     {
         $plan = Planes::find($id);
 
-        if (!$plan) {
+        if (! $plan) {
             $data = [
                 'message' => 'Error, plan no encontrado',
                 'status' => 404,
@@ -119,7 +119,7 @@ class PlanesController extends Controller
     {
         $plan = Planes::find($id);
 
-        if (!$plan) {
+        if (! $plan) {
             $data = [
                 'message' => 'Error, plan no encontrado',
                 'status' => 404,
@@ -159,7 +159,7 @@ class PlanesController extends Controller
     {
         $plan = Planes::find($id);
 
-        if (!$plan) {
+        if (! $plan) {
             return response()->json([
                 'message' => 'Error, plan no encontrado',
                 'status' => 404,
@@ -195,7 +195,7 @@ class PlanesController extends Controller
         // Buscar el plan por código y que esté stock
         $plan = Planes::where('codigo', $codigo)->where('stock', true)->first();
 
-        if (!$plan) {
+        if (! $plan) {
             return response()->json([
                 'message' => 'Plan no encontrado o instock',
                 'status' => 404,

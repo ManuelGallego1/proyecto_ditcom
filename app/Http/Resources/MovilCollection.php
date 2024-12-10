@@ -16,7 +16,7 @@ class MovilCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'links' => ['self' => 'api/movil',],
+            'links' => ['self' => 'api/movil'],
         ];
     }
 }

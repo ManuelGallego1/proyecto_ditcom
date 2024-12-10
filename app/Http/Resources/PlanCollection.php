@@ -16,7 +16,7 @@ class PlanCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'links' => ['self' => 'api/planes',],
+            'links' => ['self' => 'api/planes'],
         ];
     }
 }

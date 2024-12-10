@@ -3,11 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ClientesCollection;
 use App\Http\Resources\ClientesResource;
 use App\Models\Clientes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\ClientesCollection;
 
 class ClientesController extends Controller
 {
@@ -73,7 +73,7 @@ class ClientesController extends Controller
     {
         $cliente = Clientes::where('cc', $cc)->first();
 
-        if (!$cliente) {
+        if (! $cliente) {
             $data = [
                 'message' => 'Error cliente no encontrado',
                 'status' => 404,
@@ -95,7 +95,7 @@ class ClientesController extends Controller
     {
         $cliente = Clientes::find($id);
 
-        if (!$cliente) {
+        if (! $cliente) {
             $data = [
                 'message' => 'Error cliente no encontrado',
                 'status' => 404,
@@ -118,7 +118,7 @@ class ClientesController extends Controller
     {
         $cliente = Clientes::find($id);
 
-        if (!$cliente) {
+        if (! $cliente) {
             $data = [
                 'message' => 'Error cliente no encontrado',
                 'status' => 404,
@@ -168,7 +168,7 @@ class ClientesController extends Controller
     {
         $cliente = Clientes::find($id);
 
-        if (!$cliente) {
+        if (! $cliente) {
             $data = [
                 'message' => 'Error cliente no encontrado',
                 'status' => 404,

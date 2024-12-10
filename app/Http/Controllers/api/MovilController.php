@@ -58,7 +58,7 @@ class MovilController extends Controller
         // Obtener la sede del vendedor automáticamente
         $sedeVendedor = SedeVendedor::where('vendedor_id', $request->vendedor_id)->first();
 
-        if (!$sedeVendedor) {
+        if (! $sedeVendedor) {
             return response()->json([
                 'message' => 'Error, no se encontró una sede asignada para el vendedor',
                 'status' => 400,
@@ -68,7 +68,7 @@ class MovilController extends Controller
         // Obtenemos el coordinador_id desde la sede
         $sede = $sedeVendedor->sede;
 
-        if (!$sede || !$sede->coordinador_id) {
+        if (! $sede || ! $sede->coordinador_id) {
             return response()->json([
                 'message' => 'Error, no se encontró un coordinador asignado para la sede',
                 'status' => 400,
@@ -105,7 +105,7 @@ class MovilController extends Controller
     {
         $movil = Movil::where('vendedor_id', $id)->get();
 
-        if (!$movil) {
+        if (! $movil) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,
@@ -127,7 +127,7 @@ class MovilController extends Controller
     {
         $movil = Movil::where('id', $id)->get();
 
-        if (!$movil) {
+        if (! $movil) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,
@@ -163,7 +163,7 @@ class MovilController extends Controller
     {
         $movil = Movil::find($id);
 
-        if (!$movil) {
+        if (! $movil) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,
@@ -186,7 +186,7 @@ class MovilController extends Controller
     {
         $movil = Movil::find($id);
 
-        if (!$movil) {
+        if (! $movil) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,
@@ -240,7 +240,7 @@ class MovilController extends Controller
         $movil = Movil::find($id);
 
         // Si no existe, devolver un error 404
-        if (!$movil) {
+        if (! $movil) {
             return response()->json([
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,

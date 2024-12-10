@@ -16,7 +16,7 @@ class SedeVendedorCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'links' => ['self' => 'api/sede-vendedor',],
+            'links' => ['self' => 'api/sede-vendedor'],
         ];
     }
 }

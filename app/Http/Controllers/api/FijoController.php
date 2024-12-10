@@ -62,7 +62,7 @@ class FijoController extends Controller
 
         $sedeVendedor = SedeVendedor::where('vendedor_id', $request->vendedor_id)->first();
 
-        if (!$sedeVendedor) {
+        if (! $sedeVendedor) {
             return response()->json([
                 'message' => 'Error, no se encontró una sede asignada para el vendedor',
                 'status' => 400,
@@ -89,7 +89,7 @@ class FijoController extends Controller
         ]);
 
         // Comprobar si la creación fue exitosa
-        if (!$fijo) {
+        if (! $fijo) {
             return response()->json([
                 'message' => 'Error al crear el registro de fijo',
                 'status' => 500,
@@ -107,7 +107,7 @@ class FijoController extends Controller
     {
         $fijo = Fijo::where('vendedor_id', $id)->get();
 
-        if (!$fijo) {
+        if (! $fijo) {
             $data = [
                 'message' => 'Error, fijo no encontrado',
                 'status' => 404,
@@ -129,7 +129,7 @@ class FijoController extends Controller
     {
         $fijo = Fijo::where('id', $id)->get();
 
-        if (!$fijo) {
+        if (! $fijo) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,
@@ -181,7 +181,7 @@ class FijoController extends Controller
     {
         $fijo = Fijo::find($id);
 
-        if (!$fijo) {
+        if (! $fijo) {
             $data = [
                 'message' => 'Error, fijo no encontrado',
                 'status' => 404,
@@ -204,7 +204,7 @@ class FijoController extends Controller
     {
         $fijo = Fijo::find($id);
 
-        if (!$fijo) {
+        if (! $fijo) {
             $data = [
                 'message' => 'Error, fijo no encontrado',
                 'status' => 404,
@@ -255,7 +255,7 @@ class FijoController extends Controller
     {
         $fijo = Fijo::find($id);
 
-        if (!$fijo) {
+        if (! $fijo) {
             return response()->json([
                 'message' => 'Error, fijo no encontrado',
                 'status' => 404,

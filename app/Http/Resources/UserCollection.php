@@ -16,7 +16,7 @@ class UserCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'links' => ['self' => 'api/usuarios',],
+            'links' => ['self' => 'api/usuarios'],
         ];
     }
 }

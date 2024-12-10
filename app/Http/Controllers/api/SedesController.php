@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SedesCollection;
 use App\Http\Resources\SedesResource;
 use App\Models\Sedes;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
-use App\Http\Resources\SedesCollection;
 
 class SedesController extends Controller
 {
@@ -57,7 +57,7 @@ class SedesController extends Controller
             'activo' => true, // Establecer el valor de 'activo' en true
         ]);
 
-        if (!$sede) {
+        if (! $sede) {
             $data = [
                 'message' => 'Error al crear la sede',
                 'status' => 500,
@@ -79,7 +79,7 @@ class SedesController extends Controller
         // Buscar solo las sedes activas por ID
         $sede = Sedes::where('id', $id)->where('activo', true)->first();
 
-        if (!$sede) {
+        if (! $sede) {
             $data = [
                 'message' => 'Error, sede no encontrada o inactiva',
                 'status' => 404,
@@ -122,7 +122,7 @@ class SedesController extends Controller
     {
         $sede = Sedes::find($id);
 
-        if (!$sede) {
+        if (! $sede) {
             $data = [
                 'message' => 'Error, sede no encontrada',
                 'status' => 404,
@@ -145,7 +145,7 @@ class SedesController extends Controller
     {
         $sede = Sedes::find($id);
 
-        if (!$sede) {
+        if (! $sede) {
             $data = [
                 'message' => 'Error, sede no encontrada',
                 'status' => 404,
@@ -187,7 +187,7 @@ class SedesController extends Controller
     {
         $sede = Sedes::find($id);
 
-        if (!$sede) {
+        if (! $sede) {
             return response()->json([
                 'message' => 'Error, sede no encontrada',
                 'status' => 404,

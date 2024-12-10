@@ -16,7 +16,7 @@ class FijoCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'links' => ['self' => 'api/fijo',],
+            'links' => ['self' => 'api/fijo'],
         ];
     }
 }

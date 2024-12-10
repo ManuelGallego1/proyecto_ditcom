@@ -16,7 +16,7 @@ class CelularesCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'links' => ['self' => 'api/celulares',],
+            'links' => ['self' => 'api/celulares'],
         ];
     }
 }

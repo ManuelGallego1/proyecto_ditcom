@@ -16,7 +16,7 @@ class ClientesCollection extends ResourceCollection
     {
         return [
             'data' => $this->collection,
-            'links' => ['self' => 'api/clientes',],
+            'links' => ['self' => 'api/clientes'],
         ];
     }
 }

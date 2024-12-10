@@ -16,7 +16,7 @@ class PlanResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'plan' => $this->codigo . ' - ' . $this->nombre,
+            'plan' => $this->codigo.' - '.$this->nombre,
             'stock' => $this->stock == 1 ? 'si' : 'no',
             'creado' => $this->created_at,
             'actualizado' => $this->updated_at,
