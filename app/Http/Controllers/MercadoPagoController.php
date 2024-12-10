@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use MercadoPago\SDK;
-use MercadoPago\Preference;
 use MercadoPago\Item;
+use MercadoPago\Preference;
+use MercadoPago\SDK;
 
 class MercadoPagoController extends Controller
 {
@@ -16,25 +16,22 @@ class MercadoPagoController extends Controller
 
     public function createPreference(Request $request)
     {
-        // Configurar las credenciales de MercadoPago
-        SDK::setAccessToken(config('services.mercadopago.token'));
-
         // Crear una preferencia
-        $preference = new Preference();
+        $preference = new Preference;
 
         // Crear un ítem en la preferencia
-        $item = new Item();
+        $item = new Item;
         $item->title = $request->input('title');
         $item->quantity = $request->input('quantity');
         $item->unit_price = $request->input('unit_price');
-        $preference->items = array($item);
+        $preference->items = [$item];
 
         // Guardar y obtener la URL de pago
         $preference->save();
 
         return response()->json([
             'id' => $preference->id,
-            'url_pago' => $preference->sandbox_init_point
+            'url_pago' => $preference->sandbox_init_point,
         ]);
     }
 }
