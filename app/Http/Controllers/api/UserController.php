@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\UserCollection;
+use App\Http\Resources\UserResource;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
@@ -10,16 +12,20 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::where('role', '!=', 'super')->get();
+        $perPage = $request->input('per_page', 15); // Número de elementos por página, por defecto 15
+        $users = User::where('role', '!=', 'super')->paginate($perPage);
 
-        $data = [
-            'users' => $users,
+        return (new UserCollection($users))->additional([
+            'pagination' => [
+                'current_page' => $users->currentPage(),
+                'last_page' => $users->lastPage(),
+                'per_page' => $users->perPage(),
+                'total' => $users->total(),
+            ],
             'status' => 200,
-        ];
-
-        return response()->json($data, 200);
+        ]);
     }
 
     public function store(Request $request)
@@ -58,12 +64,9 @@ class UserController extends Controller
             return response()->json($data, 500);
         }
 
-        $data = [
-            'user' => $user,
+        return (new UserCollection($user))->additional([
             'status' => 201,
-        ];
-
-        return response()->json($data, 201);
+        ]);
     }
 
     public function show($id)
@@ -80,7 +83,8 @@ class UserController extends Controller
         }
 
         $data = [
-            'user' => $user,
+            'message' => 'Usuario encontrado',
+            'user' => new UserResource($user),
             'status' => 200,
         ];
 
@@ -153,7 +157,7 @@ class UserController extends Controller
 
         $data = [
             'message' => 'Usuario actualizado',
-            'user' => $user,
+            'user' => new UserResource($user),
             'status' => 200,
         ];
 
@@ -210,8 +214,8 @@ class UserController extends Controller
         $user->save();
 
         $data = [
-            'message' => 'Usuario actualizado parcialmente',
-            'user' => $user,
+            'message' => 'Usuario actualizado',
+            'user' => new UserResource($user),
             'status' => 200,
         ];
 
@@ -221,7 +225,7 @@ class UserController extends Controller
     public function filterByRole($role)
     {
         // Validar que el rol sea uno de los permitidos
-        $validRoles = ['vendedor', 'coordinador']; // Ajusta estos roles según tu aplicación
+        $validRoles = ['asesor', 'coordinador', 'admin']; // Ajusta estos roles según tu aplicación
 
         if (! in_array($role, $validRoles)) {
             $data = [
@@ -245,7 +249,8 @@ class UserController extends Controller
         }
 
         $data = [
-            'users' => $users,
+            'message' => 'Usuarios encontrados',
+            'users' => new UserCollection($users),
             'status' => 200,
         ];
 

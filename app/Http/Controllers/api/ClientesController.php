@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\ClientesResource;
 use App\Models\Clientes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\ClientesCollection;
 
 class ClientesController extends Controller
 {
@@ -15,18 +17,15 @@ class ClientesController extends Controller
 
         $clientes = Clientes::orderBy('id', 'asc')->paginate($perPage);
 
-        $data = [
-            'clientes' => $clientes,
+        return (new ClientesCollection($clientes))->additional([
             'pagination' => [
-                'current_page' => $clientes->currentPage(), // Página actual
-                'last_page' => $clientes->lastPage(), // Última página
-                'per_page' => $clientes->perPage(), // Cantidad de registros por página
-                'total' => $clientes->total(), // Total de registros
+                'current_page' => $clientes->currentPage(),
+                'last_page' => $clientes->lastPage(),
+                'per_page' => $clientes->perPage(),
+                'total' => $clientes->total(),
             ],
             'status' => 200,
-        ];
-
-        return response()->json($data, 200);
+        ]);
     }
 
     public function store(Request $request)
@@ -59,17 +58,22 @@ class ClientesController extends Controller
             'numero' => $request->numero,
         ]);
 
-        return response()->json([
-            'cliente' => $cliente,
+        $cliente->save();
+
+        $data = [
+            'message' => 'Cliente creado',
+            'cliente' => new ClientesResource($cliente),
             'status' => 201,
-        ], 201);
+        ];
+
+        return response()->json($data, 201);
     }
 
     public function show($cc)
     {
         $cliente = Clientes::where('cc', $cc)->first();
 
-        if (! $cliente) {
+        if (!$cliente) {
             $data = [
                 'message' => 'Error cliente no encontrado',
                 'status' => 404,
@@ -79,19 +83,19 @@ class ClientesController extends Controller
         }
 
         $data = [
-            'cliente' => $cliente,
+            'message' => 'Cliente Encontrado',
+            'cliente' => new ClientesResource($cliente),
             'status' => 200,
         ];
 
         return response()->json($data, 200);
-
     }
 
     public function destroy($id)
     {
         $cliente = Clientes::find($id);
 
-        if (! $cliente) {
+        if (!$cliente) {
             $data = [
                 'message' => 'Error cliente no encontrado',
                 'status' => 404,
@@ -114,7 +118,7 @@ class ClientesController extends Controller
     {
         $cliente = Clientes::find($id);
 
-        if (! $cliente) {
+        if (!$cliente) {
             $data = [
                 'message' => 'Error cliente no encontrado',
                 'status' => 404,
@@ -153,7 +157,7 @@ class ClientesController extends Controller
 
         $data = [
             'message' => 'Cliente actualizado',
-            'cliente' => $cliente,
+            'cliente' => new ClientesResource($cliente),
             'status' => 200,
         ];
 
@@ -164,7 +168,7 @@ class ClientesController extends Controller
     {
         $cliente = Clientes::find($id);
 
-        if (! $cliente) {
+        if (!$cliente) {
             $data = [
                 'message' => 'Error cliente no encontrado',
                 'status' => 404,
@@ -215,7 +219,7 @@ class ClientesController extends Controller
 
         $data = [
             'message' => 'Cliente actualizado',
-            'cliente' => $cliente,
+            'cliente' => new ClientesResource($cliente),
             'status' => 200,
         ];
 

@@ -3,38 +3,25 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Models\Sede;
+use App\Http\Resources\SedesResource;
+use App\Models\Sedes;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\SedesCollection;
 
-class SedeController extends Controller
+class SedesController extends Controller
 {
     public function index(Request $request)
     {
-        // Número de registros por página (se puede personalizar con un parámetro 'per_page')
         $perPage = $request->input('per_page', 10);
 
-        // Filtrar solo las sedes activas e incluir el campo 'activo', aplicar paginación
-        $sedes = Sede::with('coordinador')
+        $sedes = Sedes::with('coordinador')
             ->where('activo', true)
-            ->orderBy('id', 'asc') // Puedes cambiar el orden si lo deseas
-            ->paginate($perPage); // Paginación
+            ->orderBy('id', 'asc')
+            ->paginate($perPage);
 
-        // Formatear los datos de respuesta
-        $sedes = $sedes->map(function ($sede) {
-            return [
-                'id' => $sede->id,
-                'nombre' => $sede->nombre,
-                'coordinador_id' => $sede->coordinador_id,
-                'coordinador_name' => User::find($sede->coordinador_id)->name,
-                'activo' => $sede->activo,
-            ];
-        });
-
-        // Respuesta con datos y paginación
-        $data = [
-            'sedes' => $sedes,
+        return (new SedesCollection($sedes))->additional([
             'pagination' => [
                 'current_page' => $sedes->currentPage(),
                 'last_page' => $sedes->lastPage(),
@@ -42,9 +29,7 @@ class SedeController extends Controller
                 'total' => $sedes->total(),
             ],
             'status' => 200,
-        ];
-
-        return response()->json($data, 200);
+        ]);
     }
 
     public function store(Request $request)
@@ -66,13 +51,13 @@ class SedeController extends Controller
         }
 
         // Crear la nueva sede con el valor 'activo' en true
-        $sede = Sede::create([
+        $sede = Sedes::create([
             'nombre' => $request->nombre,
             'coordinador_id' => $request->coordinador_id,
             'activo' => true, // Establecer el valor de 'activo' en true
         ]);
 
-        if (! $sede) {
+        if (!$sede) {
             $data = [
                 'message' => 'Error al crear la sede',
                 'status' => 500,
@@ -82,7 +67,7 @@ class SedeController extends Controller
         }
 
         $data = [
-            'sede' => $sede,
+            'sede' => new SedesResource($sede),
             'status' => 201,
         ];
 
@@ -92,9 +77,9 @@ class SedeController extends Controller
     public function show($id)
     {
         // Buscar solo las sedes activas por ID
-        $sede = Sede::where('id', $id)->where('activo', true)->first();
+        $sede = Sedes::where('id', $id)->where('activo', true)->first();
 
-        if (! $sede) {
+        if (!$sede) {
             $data = [
                 'message' => 'Error, sede no encontrada o inactiva',
                 'status' => 404,
@@ -104,7 +89,7 @@ class SedeController extends Controller
         }
 
         $data = [
-            'sede' => $sede,
+            'sede' => new SedesResource($sede),
             'status' => 200,
         ];
 
@@ -114,7 +99,7 @@ class SedeController extends Controller
     public function show2($id)
     {
         // Buscar sedes activas por coordinador_id
-        $sedes = Sede::where('coordinador_id', $id)->where('activo', true)->get();
+        $sedes = Sedes::where('coordinador_id', $id)->where('activo', true)->get();
 
         if ($sedes->isEmpty()) {
             $data = [
@@ -126,7 +111,7 @@ class SedeController extends Controller
         }
 
         $data = [
-            'sede' => $sedes,
+            'sede' => new SedesResource($sedes),
             'status' => 200,
         ];
 
@@ -135,9 +120,9 @@ class SedeController extends Controller
 
     public function destroy($id)
     {
-        $sede = Sede::find($id);
+        $sede = Sedes::find($id);
 
-        if (! $sede) {
+        if (!$sede) {
             $data = [
                 'message' => 'Error, sede no encontrada',
                 'status' => 404,
@@ -158,9 +143,9 @@ class SedeController extends Controller
 
     public function update(Request $request, $id)
     {
-        $sede = Sede::find($id);
+        $sede = Sedes::find($id);
 
-        if (! $sede) {
+        if (!$sede) {
             $data = [
                 'message' => 'Error, sede no encontrada',
                 'status' => 404,
@@ -191,7 +176,7 @@ class SedeController extends Controller
 
         $data = [
             'message' => 'Sede actualizada',
-            'sede' => $sede,
+            'sede' => new SedesResource($sede),
             'status' => 200,
         ];
 
@@ -200,9 +185,9 @@ class SedeController extends Controller
 
     public function updatePartial(Request $request, $id)
     {
-        $sede = Sede::find($id);
+        $sede = Sedes::find($id);
 
-        if (! $sede) {
+        if (!$sede) {
             return response()->json([
                 'message' => 'Error, sede no encontrada',
                 'status' => 404,
@@ -237,14 +222,14 @@ class SedeController extends Controller
 
         return response()->json([
             'message' => 'Sede actualizada',
-            'sede' => $sede,
+            'sede' => new SedesResource($sede),
             'status' => 200,
         ], 200);
     }
 
     public function all()
     {
-        $sedes = Sede::with('coordinador')
+        $sedes = Sedes::with('coordinador')
             ->get()
             ->map(function ($sede) {
                 return [
@@ -257,7 +242,7 @@ class SedeController extends Controller
             });
 
         $data = [
-            'sedes' => $sedes,
+            'sedes' => new SedesCollection($sedes),
             'status' => 200,
         ];
 

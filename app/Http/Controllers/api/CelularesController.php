@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\CelularesCollection;
 use App\Models\Celulares;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -16,18 +17,15 @@ class CelularesController extends Controller
         // Filtrar solo los celulares donde 'activo' sea true
         $celulares = Celulares::where('activo', true)->paginate($perPage);
 
-        $data = [
-            'celulares' => $celulares,
+        return (new CelularesCollection($celulares))->additional([
             'pagination' => [
                 'current_page' => $celulares->currentPage(),
                 'last_page' => $celulares->lastPage(),
-                'total' => $celulares->total(),
                 'per_page' => $celulares->perPage(),
+                'total' => $celulares->total(),
             ],
             'status' => 200,
-        ];
-
-        return response()->json($data, 200);
+        ]);
     }
 
     public function store(Request $request)

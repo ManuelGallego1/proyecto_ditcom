@@ -38,7 +38,7 @@ class Movil extends Model
 
     public function sede()
     {
-        return $this->belongsTo(Sede::class, 'sede_id');
+        return $this->belongsTo(Sedes::class, 'sede_id');
     }
 
     public function coordinador()

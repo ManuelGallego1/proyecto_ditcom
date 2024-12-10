@@ -3,25 +3,30 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\PlanResource;
 use App\Models\Planes;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use App\Http\Resources\PlanCollection;
 
 class PlanesController extends Controller
 {
     public function index(Request $request)
     {
         $perPage = $request->input('per_page', 10);
-        // Filtrar solo los planes activos
-        $planes = Planes::where('activo', true)->orderBy('id', 'asc') // Ordenar por id ascendente
+        // Filtrar solo los planes stocks
+        $planes = Planes::where('stock', true)->orderBy('id', 'asc') // Ordenar por id ascendente
             ->paginate($perPage); // Paginación
 
-        $data = [
-            'planes' => $planes,
+        return (new PlanCollection($planes))->additional([
+            'pagination' => [
+                'current_page' => $planes->currentPage(),
+                'last_page' => $planes->lastPage(),
+                'per_page' => $planes->perPage(),
+                'total' => $planes->total(),
+            ],
             'status' => 200,
-        ];
-
-        return response()->json($data, 200);
+        ]);
     }
 
     public function store(Request $request)
@@ -41,14 +46,14 @@ class PlanesController extends Controller
             return response()->json($data, 400);
         }
 
-        // Crear el nuevo plan con 'activo' en true por defecto
+        // Crear el nuevo plan con 'stock' en true por defecto
         $plan = Planes::create([
             'codigo' => $request->codigo,
             'nombre' => $request->nombre,
-            'activo' => true,
+            'stock' => true,
         ]);
 
-        if (! $plan) {
+        if (!$plan) {
             $data = [
                 'message' => 'Error al crear el registro del plan',
                 'status' => 500,
@@ -58,7 +63,7 @@ class PlanesController extends Controller
         }
 
         $data = [
-            'plan' => $plan,
+            'plan' => new PlanCollection(collect([$plan])),
             'status' => 201,
         ];
 
@@ -67,12 +72,12 @@ class PlanesController extends Controller
 
     public function show($id)
     {
-        // Buscar solo los planes activos por ID
-        $plan = Planes::where('activo', true)->find($id);
+        // Buscar solo los planes stocks por ID
+        $plan = Planes::where('stock', true)->find($id);
 
-        if (! $plan) {
+        if (!$plan) {
             $data = [
-                'message' => 'Error, plan no encontrado o inactivo',
+                'message' => 'Error, plan no encontrado o sin stock',
                 'status' => 404,
             ];
 
@@ -80,7 +85,7 @@ class PlanesController extends Controller
         }
 
         $data = [
-            'plan' => $plan,
+            'plan' => new PlanResource($plan),
             'status' => 200,
         ];
 
@@ -91,7 +96,7 @@ class PlanesController extends Controller
     {
         $plan = Planes::find($id);
 
-        if (! $plan) {
+        if (!$plan) {
             $data = [
                 'message' => 'Error, plan no encontrado',
                 'status' => 404,
@@ -114,7 +119,7 @@ class PlanesController extends Controller
     {
         $plan = Planes::find($id);
 
-        if (! $plan) {
+        if (!$plan) {
             $data = [
                 'message' => 'Error, plan no encontrado',
                 'status' => 404,
@@ -126,7 +131,7 @@ class PlanesController extends Controller
         $validar = Validator::make($request->all(), [
             'codigo' => 'required|string|max:50',
             'nombre' => 'required|string|max:100',
-            'activo' => 'sometimes|boolean',
+            'stock' => 'sometimes|boolean',
         ]);
 
         if ($validar->fails()) {
@@ -143,7 +148,7 @@ class PlanesController extends Controller
 
         $data = [
             'message' => 'Registro del plan actualizado',
-            'plan' => $plan,
+            'plan' => new PlanResource($plan),
             'status' => 200,
         ];
 
@@ -154,7 +159,7 @@ class PlanesController extends Controller
     {
         $plan = Planes::find($id);
 
-        if (! $plan) {
+        if (!$plan) {
             return response()->json([
                 'message' => 'Error, plan no encontrado',
                 'status' => 404,
@@ -164,7 +169,7 @@ class PlanesController extends Controller
         $validar = Validator::make($request->all(), [
             'codigo' => 'string|max:50',
             'nombre' => 'string|max:100',
-            'activo' => 'sometimes|boolean',
+            'stock' => 'sometimes|boolean',
         ]);
 
         if ($validar->fails()) {
@@ -180,31 +185,37 @@ class PlanesController extends Controller
 
         return response()->json([
             'message' => 'Registro del plan actualizado parcialmente',
-            'plan' => $plan,
+            'plan' => new PlanResource($plan),
             'status' => 200,
         ], 200);
     }
 
     public function getPlanByCodigo($codigo)
     {
-        // Buscar el plan por código y que esté activo
-        $plan = Planes::where('codigo', $codigo)->where('activo', true)->first();
+        // Buscar el plan por código y que esté stock
+        $plan = Planes::where('codigo', $codigo)->where('stock', true)->first();
 
-        if (! $plan) {
+        if (!$plan) {
             return response()->json([
-                'message' => 'Plan no encontrado o inactivo',
+                'message' => 'Plan no encontrado o instock',
                 'status' => 404,
             ], 404);
         }
 
-        return response()->json($plan);
+        return response()->json([
+            'plan' => new PlanResource($plan),
+            'status' => 200,
+        ], 200);
     }
 
     public function getAllCodigos()
     {
-        $codigos = Planes::where('activo', true)->select('codigo')->distinct()->pluck('codigo');
+        $codigos = Planes::where('stock', true)->select('codigo')->distinct()->pluck('codigo');
 
-        return response()->json($codigos);
+        return response()->json([
+            'codigos' => $codigos,
+            'status' => 200,
+        ], 200);
     }
 
     public function storeMultiple(Request $request)
@@ -227,7 +238,7 @@ class PlanesController extends Controller
         // Intentar insertar todos los registros
         try {
             foreach ($request->planes as $planData) {
-                Planes::create(array_merge($planData, ['activo' => true]));
+                Planes::create(array_merge($planData, ['stock' => true]));
             }
 
             return response()->json([
@@ -243,15 +254,19 @@ class PlanesController extends Controller
         }
     }
 
-    public function all()
+    public function all(Request $request)
     {
-        $planes = Planes::all();
+        $perPage = $request->input('per_page', 10);
+        $planes = Planes::paginate($perPage);
 
-        $data = [
-            'planes' => $planes,
+        return (new PlanCollection($planes))->additional([
+            'pagination' => [
+                'current_page' => $planes->currentPage(),
+                'last_page' => $planes->lastPage(),
+                'per_page' => $planes->perPage(),
+                'total' => $planes->total(),
+            ],
             'status' => 200,
-        ];
-
-        return response()->json($data, 200);
+        ]);
     }
 }

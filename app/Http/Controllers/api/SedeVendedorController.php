@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\SedeVendedorCollection;
+use App\Http\Resources\SedeVendorResource;
 use App\Models\SedeVendedor;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
@@ -18,26 +20,15 @@ class SedeVendedorController extends Controller
         // Obtener las asignaciones con relaciones y paginarlas
         $sedeVendedores = SedeVendedor::with(['vendedor', 'sede'])->paginate($perPage);
 
-        // Formatear la respuesta para incluir los nombres
-        $formattedSedeVendedores = $sedeVendedores->items(); // Obtiene los registros actuales
-        $formattedSedeVendedores = array_map(function ($sedeVendedor) {
-            return [
-                'id' => $sedeVendedor['id'],
-                'vendedor_name' => $sedeVendedor['vendedor']['name'] ?? 'Vendedor no asignado',
-                'sede_name' => $sedeVendedor['sede']['nombre'] ?? 'Sede no asignada',
-            ];
-        }, $formattedSedeVendedores);
-
-        return response()->json([
-            'sedeVendedores' => $formattedSedeVendedores,
+        return (new SedeVendedorCollection($sedeVendedores))->additional([
             'pagination' => [
                 'current_page' => $sedeVendedores->currentPage(),
                 'last_page' => $sedeVendedores->lastPage(),
-                'total' => $sedeVendedores->total(),
                 'per_page' => $sedeVendedores->perPage(),
+                'total' => $sedeVendedores->total(),
             ],
             'status' => 200,
-        ], 200);
+        ]);
     }
 
     // Método para crear una nueva asignación de vendedor a sede
@@ -46,7 +37,7 @@ class SedeVendedorController extends Controller
         // Validar los datos recibidos
         $validar = Validator::make($request->all(), [
             'vendedor_id' => 'required|exists:users,id',
-            'sede_id' => 'required|exists:sede,id',
+            'sede_id' => 'required|exists:sedes,id',
         ]);
 
         if ($validar->fails()) {
@@ -62,7 +53,7 @@ class SedeVendedorController extends Controller
 
         return response()->json([
             'message' => 'Asignación creada con éxito',
-            'sedeVendedor' => $sedeVendedor,
+            'sedeVendedor' => new SedeVendorResource($sedeVendedor),
             'status' => 201,
         ], 201);
     }
@@ -80,7 +71,7 @@ class SedeVendedorController extends Controller
         }
 
         return response()->json([
-            'sedeVendedor' => $sedeVendedor,
+            'sedeVendedor' => new SedeVendorResource($sedeVendedor),
             'status' => 200,
         ], 200);
     }
@@ -116,7 +107,7 @@ class SedeVendedorController extends Controller
 
         return response()->json([
             'message' => 'Asignación actualizada con éxito',
-            'sedeVendedor' => $sedeVendedor,
+            'sedeVendedor' => new SedeVendorResource($sedeVendedor),
             'status' => 200,
         ], 200);
     }

@@ -14,6 +14,6 @@ class Planes extends Model
     protected $fillable = [
         'codigo',
         'nombre',
-        'activo',
+        'stock',
     ];
 }
