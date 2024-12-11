@@ -141,26 +141,4 @@ class FacturaController extends Controller
             'factura' => $factura,
         ]);
     }
-
-    public function storeMeta(Request $request)
-    {
-        $validar = Validator::make($request->all(), [
-            'tipo_venta' => 'required',
-            'cantidad' => 'required',
-        ]);
-
-        if ($validar->fails()) {
-            return response()->json([
-                'message' => 'Error en la validación de datos',
-                'errors' => $validar->errors(),
-            ], 400);
-        }
-
-        $metaVenta = MetaVenta::create($request->all());
-
-        return response()->json([
-            'message' => 'Meta de venta creada correctamente',
-            'meta_venta' => $metaVenta,
-        ], 201);
-    }
 }

@@ -15,7 +15,27 @@ class UserController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('per_page', 15); // Número de elementos por página, por defecto 15
-        $users = User::where('role', '!=', 'super')->paginate($perPage);
+        $role = $request->input('role'); // Obtener el rol del request
+
+        // Validar que el rol sea uno de los permitidos
+        $validRoles = ['asesor', 'coordinador', 'admin']; // Ajusta estos roles según tu aplicación
+
+        if ($role && ! in_array($role, $validRoles)) {
+            $data = [
+                'message' => 'Rol no válido',
+                'status' => 400,
+            ];
+
+            return response()->json($data, 400);
+        }
+
+        // Filtrar por rol si se proporciona, de lo contrario obtener todos los usuarios excepto 'super'
+        $query = User::where('role', '!=', 'super');
+        if ($role) {
+            $query->where('role', $role);
+        }
+
+        $users = $query->paginate($perPage);
 
         return (new UserCollection($users))->additional([
             'pagination' => [

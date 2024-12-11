@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\PlanesController;
 use App\Http\Controllers\Api\SedesController;
 use App\Http\Controllers\Api\SedeVendedorController;
 use App\Http\Controllers\Api\UserController;
+use App\Http\Controllers\FacturaController;
+use App\Http\Controllers\MetaController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
@@ -31,12 +33,16 @@ Route::middleware(['auth:sanctum'])->group(function () {
     Route::get('usuario', function (Request $request) {
         return $request->user();
     });
-    Route::get('usuarios/{id}/export-movil', function ($asesor) {
+    Route::get('usuarios/{id}/export/movil', function ($asesor) {
         return Excel::download(new MovilAsesorExport($asesor), 'movilAsesor.xlsx');
     });
-    Route::get('usuarios/{id}/export-fijo', function ($asesor) {
+    Route::get('usuarios/{id}/export/fijo', function ($asesor) {
         return Excel::download(new FijoAsesorExport($asesor), 'fijoAsesor.xlsx');
     });
+    Route::apiResource('facturas', FacturaController::class);
+    Route::get('facturas/{id}/pdf', [FacturaController::class, 'generarPDF']);
+    Route::get('facturas/progreso/{tipo_venta}', [FacturaController::class, 'progresoVentas']);
+    Route::put('facturas/{id}/estado/{nuevoEstado}', [FacturaController::class, 'editarEstado']);
 });
 
 Route::middleware(['auth:sanctum', 'role:coordinador'])->group(function () {
@@ -47,6 +53,7 @@ Route::middleware(['auth:sanctum', 'role:coordinador'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:super'])->group(function () {
     Route::apiResource('sede-vendedores', SedeVendedorController::class);
     Route::apiResource('usuarios', UserController::class);
+    Route::apiResource('metas', MetaController::class);
     Route::get('/consolidado/movil', function () {
         return Excel::download(new MovilExport, 'movil.xlsx');
     });
