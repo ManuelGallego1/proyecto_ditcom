@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Sede;
+use App\Models\Sedes;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -29,19 +29,19 @@ class SedeSeeder extends Seeder
         }
 
         // Crear sedes con coordinador asignado
-        Sede::create([
+        Sedes::create([
             'nombre' => 'Sede Central',
             'coordinador_id' => $coordinador->id,
             'activo' => true,
         ]);
 
-        Sede::create([
+        Sedes::create([
             'nombre' => 'Sede Norte',
             'coordinador_id' => $coordinador->id,
             'activo' => true,
         ]);
 
-        Sede::create([
+        Sedes::create([
             'nombre' => 'Sede Sur',
             'coordinador_id' => $coordinador->id,
             'activo' => false, // Esta sede está inactiva como ejemplo

@@ -1,6 +1,8 @@
 <?php
 
+use App\Exports\FijoAsesorExport;
 use App\Exports\FijoExport;
+use App\Exports\MovilAsesorExport;
 use App\Exports\MovilExport;
 use App\Http\Controllers\Api\CelularesController;
 use App\Http\Controllers\Api\ClientesController;
@@ -14,20 +16,26 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use Maatwebsite\Excel\Facades\Excel;
 
-Route::post('/v1/login', [App\Http\Controllers\api\AuthController::class, 'login'])->name('api.login');
-Route::post('/v1/register', [App\Http\Controllers\api\AuthController::class, 'register'])->name('api.register');
+Route::post('login', [App\Http\Controllers\api\AuthController::class, 'login'])->name('api.login');
+Route::post('register', [App\Http\Controllers\api\AuthController::class, 'register'])->name('api.register');
 
 Route::middleware(['auth:sanctum'])->group(function () {
-    Route::post('/v1/logout', [App\Http\Controllers\api\AuthController::class, 'logout'])->name('api.logout');
+    Route::post('logout', [App\Http\Controllers\api\AuthController::class, 'logout'])->name('api.logout');
     Route::apiResource('celulares', CelularesController::class);
     Route::apiResource('clientes', ClientesController::class);
     Route::apiResource('planes', PlanesController::class);
     Route::apiResource('sedes', SedesController::class);
     Route::apiResource('fijo', FijoController::class);
     Route::apiResource('movil', MovilController::class);
-    Route::post('/v1/mercadopago/preference', [App\Http\Controllers\MercadoPagoController::class, 'createPreference'])->name('api.mercadopago.preference');
-    Route::get('/user', function (Request $request) {
+    Route::post('mercadopago/preference', [App\Http\Controllers\MercadoPagoController::class, 'createPreference'])->name('api.mercadopago.preference');
+    Route::get('usuario', function (Request $request) {
         return $request->user();
+    });
+    Route::get('usuarios/{id}/export-movil', function ($asesor) {
+        return Excel::download(new MovilAsesorExport($asesor), 'movilAsesor.xlsx');
+    });
+    Route::get('usuarios/{id}/export-fijo', function ($asesor) {
+        return Excel::download(new FijoAsesorExport($asesor), 'fijoAsesor.xlsx');
     });
 });
 
@@ -39,10 +47,10 @@ Route::middleware(['auth:sanctum', 'role:coordinador'])->group(function () {
 Route::middleware(['auth:sanctum', 'role:super'])->group(function () {
     Route::apiResource('sede-vendedores', SedeVendedorController::class);
     Route::apiResource('usuarios', UserController::class);
-    Route::get('/export-movil', function () {
+    Route::get('/consolidado/movil', function () {
         return Excel::download(new MovilExport, 'movil.xlsx');
     });
-    Route::get('export-fijo', function () {
+    Route::get('/consolidado/fijo', function () {
         return Excel::download(new FijoExport, 'fijo.xlsx');
     });
 

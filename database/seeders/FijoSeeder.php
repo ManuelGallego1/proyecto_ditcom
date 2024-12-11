@@ -4,7 +4,7 @@ namespace Database\Seeders;
 
 use App\Models\Clientes;
 use App\Models\Fijo;
-use App\Models\Sede;
+use App\Models\Sedes;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -18,7 +18,7 @@ class FijoSeeder extends Seeder
     public function run()
     {
         $cliente = Clientes::inRandomOrder()->first();
-        $sede = Sede::inRandomOrder()->first();
+        $sede = Sedes::inRandomOrder()->first();
         $vendedor = User::where('role', 'vendedor')->inRandomOrder()->first();
 
         // Verificar que los modelos no sean null antes de proceder
@@ -46,7 +46,7 @@ class FijoSeeder extends Seeder
 
         // Puedes crear más registros si lo deseas, siguiendo la misma lógica de verificación
         $cliente2 = Clientes::inRandomOrder()->first();
-        $sede2 = Sede::inRandomOrder()->first();
+        $sede2 = Sedes::inRandomOrder()->first();
         $vendedor2 = User::where('role', 'vendedor')->inRandomOrder()->first();
 
         if ($cliente2 && $sede2 && $vendedor2) {

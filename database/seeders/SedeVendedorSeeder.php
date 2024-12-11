@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Sede;
+use App\Models\Sedes;
 use App\Models\SedeVendedor;
 use App\Models\User;
 use Illuminate\Database\Seeder;
@@ -17,8 +17,8 @@ class SedeVendedorSeeder extends Seeder
     public function run()
     {
         // Verificar si existen las sedes y vendedores antes de insertar datos
-        $sedes = Sede::all();
-        $vendedores = User::where('role', 'vendedor')->get();
+        $sedes = Sedes::all();
+        $vendedores = User::where('role', 'asesor')->get();
 
         if ($sedes->isEmpty() || $vendedores->isEmpty()) {
             $this->command->error('No se encontraron sedes o vendedores para insertar en la tabla sede_vendedor.');
@@ -30,8 +30,8 @@ class SedeVendedorSeeder extends Seeder
         foreach ($sedes as $sede) {
             foreach ($vendedores as $vendedor) {
                 SedeVendedor::create([
-                    'sede_id' => $sede->id,
                     'vendedor_id' => $vendedor->id,
+                    'sede_id' => $sede->id,
                 ]);
             }
         }

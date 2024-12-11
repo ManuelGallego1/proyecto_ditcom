@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Factura;
 use Illuminate\Http\Request;
 use MercadoPago\Item;
 use MercadoPago\Preference;
@@ -29,9 +30,18 @@ class MercadoPagoController extends Controller
         // Guardar y obtener la URL de pago
         $preference->save();
 
+        // Crear la factura
+        $factura = Factura::create([
+            'referencia' => $preference->id,
+            'tipo_venta' => $request->input('tipo_venta'), // 'movil' o 'fijo'
+            'monto' => $item->quantity * $item->unit_price,
+            'estado' => 'pendiente',
+        ]);
+
         return response()->json([
             'id' => $preference->id,
             'url_pago' => $preference->sandbox_init_point,
+            'factura' => $factura,
         ]);
     }
 }
