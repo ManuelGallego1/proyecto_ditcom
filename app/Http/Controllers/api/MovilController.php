@@ -14,8 +14,15 @@ class MovilController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->input('per_page', 10);
+        $tipoProducto = $request->input('tipo_producto');
 
-        $moviles = Movil::orderBy('id', 'asc')->paginate($perPage);
+        $query = Movil::orderBy('id', 'asc');
+
+        if ($tipoProducto) {
+            $query->where('tipo_producto', $tipoProducto);
+        }
+
+        $moviles = $query->paginate($perPage);
 
         return (new MovilCollection($moviles))->additional([
             'pagination' => [
@@ -58,7 +65,7 @@ class MovilController extends Controller
         // Obtener la sede del vendedor automáticamente
         $sedeVendedor = SedeVendedor::where('vendedor_id', $request->vendedor_id)->first();
 
-        if (! $sedeVendedor) {
+        if (!$sedeVendedor) {
             return response()->json([
                 'message' => 'Error, no se encontró una sede asignada para el vendedor',
                 'status' => 400,
@@ -68,7 +75,7 @@ class MovilController extends Controller
         // Obtenemos el coordinador_id desde la sede
         $sede = $sedeVendedor->sede;
 
-        if (! $sede || ! $sede->coordinador_id) {
+        if (!$sede || !$sede->coordinador_id) {
             return response()->json([
                 'message' => 'Error, no se encontró un coordinador asignado para la sede',
                 'status' => 400,
@@ -93,6 +100,7 @@ class MovilController extends Controller
             'sede_id' => $sedeVendedor->sede_id, // Asignamos la sede automáticamente
             'financiera' => $request->financiera,
             'coordinador_id' => $sede->coordinador_id, // Asignamos el coordinador automáticamente
+            'estado' => 'pendiente',
         ]);
 
         return response()->json([
@@ -105,7 +113,7 @@ class MovilController extends Controller
     {
         $movil = Movil::where('vendedor_id', $id)->get();
 
-        if (! $movil) {
+        if (!$movil) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,
@@ -127,7 +135,7 @@ class MovilController extends Controller
     {
         $movil = Movil::where('id', $id)->get();
 
-        if (! $movil) {
+        if (!$movil) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,
@@ -163,7 +171,7 @@ class MovilController extends Controller
     {
         $movil = Movil::find($id);
 
-        if (! $movil) {
+        if (!$movil) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,
@@ -186,7 +194,7 @@ class MovilController extends Controller
     {
         $movil = Movil::find($id);
 
-        if (! $movil) {
+        if (!$movil) {
             $data = [
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,
@@ -240,7 +248,7 @@ class MovilController extends Controller
         $movil = Movil::find($id);
 
         // Si no existe, devolver un error 404
-        if (! $movil) {
+        if (!$movil) {
             return response()->json([
                 'message' => 'Error, móvil no encontrado',
                 'status' => 404,

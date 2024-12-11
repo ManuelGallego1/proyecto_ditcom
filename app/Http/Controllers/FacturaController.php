@@ -7,20 +7,33 @@ use App\Models\MetaVenta;
 use Barryvdh\DomPDF\Facade\Pdf as PDF;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\FacturaMail;
+use Illuminate\Support\Facades\Storage;
 
 class FacturaController extends Controller
 {
-    public function generarPDF($id)
+    public function generarPDF(Request $request, $id)
     {
         $factura = Factura::findOrFail($id);
 
-        // Save the factura
-        $factura->save();
-
-        // Generate the PDF
+        // Generar el PDF
         $pdf = PDF::loadView('factura', compact('factura'));
 
-        return $pdf->download('factura.pdf');
+        // Guardar el PDF temporalmente
+        $pdfPath = storage_path('app/public/factura.pdf');
+        $pdf->save($pdfPath);
+
+        // Enviar el correo electrónico
+        $email = $request->input('email');
+        Mail::to($email)->send(new FacturaMail($factura, $pdfPath));
+
+        // Eliminar el archivo PDF temporal
+        Storage::delete('public/factura.pdf');
+
+        return response()->json([
+            'message' => 'Factura generada y enviada por correo correctamente',
+        ]);
     }
 
     public function progresoVentas($tipo_venta)
@@ -140,5 +153,27 @@ class FacturaController extends Controller
             'message' => 'Factura actualizada correctamente',
             'factura' => $factura,
         ]);
+    }
+
+    public function storeMeta(Request $request)
+    {
+        $validar = Validator::make($request->all(), [
+            'tipo_venta' => 'required',
+            'cantidad' => 'required',
+        ]);
+
+        if ($validar->fails()) {
+            return response()->json([
+                'message' => 'Error en la validación de datos',
+                'errors' => $validar->errors(),
+            ], 400);
+        }
+
+        $metaVenta = MetaVenta::create($request->all());
+
+        return response()->json([
+            'message' => 'Meta de venta creada correctamente',
+            'meta_venta' => $metaVenta,
+        ], 201);
     }
 }

@@ -31,7 +31,7 @@ return new class extends Migration
             $table->string('ciudad');
 
             $table->foreign('vendedor_id')->references('id')->on('users')->onDelete('cascade');
-            $table->foreign('sede_id')->references('id')->on('sede')->onDelete('cascade');
+            $table->foreign('sede_id')->references('id')->on('sedes')->onDelete('cascade');
             $table->foreign('cliente_cc')->references('cc')->on('clientes')->onDelete('cascade');
         });
     }

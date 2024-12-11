@@ -39,8 +39,8 @@ class FijoController extends Controller
             'cuenta' => 'required|integer',
             'OT' => 'required|integer',
             'tipo_producto' => 'required|in:residencial,pyme',
-            'total_servicios' => 'nullable|in:0,1,2,3', // Permitir 0
-            'total_adicionales' => 'nullable|in:0,1,2,3', // Permitir 0
+            'total_servicios' => 'nullable|in:0,1,2,3',
+            'total_adicionales' => 'nullable|in:0,1,2,3',
             'cliente_cc' => 'required|string|exists:clientes,cc',
             'convergente' => 'required|string',
             'ciudad' => 'required|string',

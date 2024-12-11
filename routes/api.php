@@ -40,7 +40,7 @@ Route::middleware(['auth:sanctum'])->group(function () {
         return Excel::download(new FijoAsesorExport($asesor), 'fijoAsesor.xlsx');
     });
     Route::apiResource('facturas', FacturaController::class);
-    Route::get('facturas/{id}/pdf', [FacturaController::class, 'generarPDF']);
+    Route::post('facturas/{id}/pdf', [FacturaController::class, 'generarPDF']);
     Route::get('facturas/progreso/{tipo_venta}', [FacturaController::class, 'progresoVentas']);
     Route::put('facturas/{id}/estado/{nuevoEstado}', [FacturaController::class, 'editarEstado']);
 });
@@ -51,7 +51,7 @@ Route::middleware(['auth:sanctum', 'role:coordinador'])->group(function () {
 });
 
 Route::middleware(['auth:sanctum', 'role:super'])->group(function () {
-    Route::apiResource('sede-vendedores', SedeVendedorController::class);
+    Route::apiResource('sede/vendedores', SedeVendedorController::class);
     Route::apiResource('usuarios', UserController::class);
     Route::apiResource('metas', MetaController::class);
     Route::get('/consolidado/movil', function () {
